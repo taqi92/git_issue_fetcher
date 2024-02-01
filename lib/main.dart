@@ -1,31 +1,38 @@
+// main.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:github_issue_fetcher/architecture/presentation/blocs/issue_bloc.dart';
-import 'package:github_issue_fetcher/architecture/presentation/pages/issue_page.dart';
-import 'package:http/http.dart';
-import 'injection_container.dart' as di;
+import 'package:dio/dio.dart';
+import 'package:github_issue_fetcher/architecture/domain/use_case/issue_use_case.dart';
+
+import 'architecture/data/repositories/issue_repository_impl.dart';
+import 'architecture/presentation/blocs/issue_bloc.dart';
+import 'architecture/presentation/pages/issue_page.dart';
+import 'injection_container.dart';
 
 void main() {
-  di.init();
+  setupInjectionContainer(); // Initialize dependency injection container
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => di.getIt<IssueBloc>(),
-        ),
-      ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.orange,
-        ),
-        home: IssuePage(),
+    final Dio dio = getIt<Dio>(); // Retrieve Dio instance from the container
+    final IssueRepositoryImpl repository = IssueRepositoryImpl(dio); // Instantiate the repository
+    final IssueUseCase useCase = IssueUseCase(repository);
+    final IssueBloc issueBloc = IssueBloc(useCase);
+
+    return MaterialApp(
+      title: 'GitHub Issues App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      home: BlocProvider(
+        create: (context) => issueBloc,
+        child: IssuePage(useCase: useCase), // Pass the bloc to the IssuePage
+      ), // Pass the repository to the IssuePage
     );
   }
 }
