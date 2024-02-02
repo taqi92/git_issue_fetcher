@@ -1,38 +1,47 @@
-// main.dart
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dio/dio.dart';
-import 'package:github_issue_fetcher/architecture/domain/use_case/issue_use_case.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
+import 'package:github_issue_fetcher/ui/splash_screen.dart';
 
-import 'architecture/data/repositories/issue_repository_impl.dart';
-import 'architecture/presentation/blocs/issue_bloc.dart';
-import 'architecture/presentation/pages/issue_page.dart';
-import 'injection_container.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
 
-void main() {
-  setupInjectionContainer(); // Initialize dependency injection container
-  runApp(MyApp());
+  runApp(
+    EasyLocalization(
+      path: 'assets/locales',
+      supportedLocales: const [Locale('en', 'US'),],
+      fallbackLocale: const Locale('en', 'US'),
+      child: const MyApp(),
+    ),
+  );
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final Dio dio = getIt<Dio>(); // Retrieve Dio instance from the container
-    final IssueRepositoryImpl repository = IssueRepositoryImpl(dio); // Instantiate the repository
-    final IssueUseCase useCase = IssueUseCase(repository);
-    final IssueBloc issueBloc = IssueBloc(useCase);
-
-    return MaterialApp(
-      title: 'GitHub Issues App',
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      builder: EasyLoading.init(),
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        hintColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          elevation: 1,
+        ),
       ),
-      home: BlocProvider(
-        create: (context) => issueBloc,
-        child: IssuePage(useCase: useCase), // Pass the bloc to the IssuePage
-      ), // Pass the repository to the IssuePage
+      home: const SplashScreen(),
     );
   }
 }
