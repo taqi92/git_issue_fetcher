@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:github_issue_fetcher/model/issue_response.dart';
-import 'package:github_issue_fetcher/utils/environment.dart';
 import '../repositories/issue_repository.dart';
 import '../utils/constants.dart';
 import '../utils/endpoints.dart';
