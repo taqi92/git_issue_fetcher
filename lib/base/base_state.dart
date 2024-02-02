@@ -102,7 +102,7 @@ abstract class BaseState<T extends StatefulWidget> extends State<T> {
       width: SizeConfig.getScreenWidth(context),
       child: Center(
         child: TextComponent(
-          message ?? "no_data_found",
+          message ?? "No data has found",
           padding: EdgeInsets.zero,
         ),
       ),

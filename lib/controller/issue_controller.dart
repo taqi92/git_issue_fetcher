@@ -36,9 +36,10 @@ class IssueController extends GetxController {
       pageNo = 1;
     }
 
-    String url = "https://api.github.com/repos${fetchListEndPoints}page=$pageNo&per_page=$pageSize";
+    String url =
+        "https://api.github.com/repos${fetchListEndPoints}page=$pageNo&per_page=$pageSize";
 
-    /*_issueRepository.getIssueList(url, (response, error) {
+    _issueRepository.getIssueList(url, (response, error) {
       if (response != null) {
 
         issueList = [];
@@ -56,9 +57,9 @@ class IssueController extends GetxController {
       } else {
         showMessage(error);
       }
-    });*/
+    });
 
-    final dio = Dio();
+    /*final dio = Dio();
 
     final response = await dio.get(url);
 
@@ -67,10 +68,10 @@ class IssueController extends GetxController {
 
       if (responseData is List<dynamic>) {
         final data = (response.data as List<dynamic>);
-        final List<IssueResponse> photos =
-        data.map((e) => IssueResponse.fromJson(e)).toList();
+        final List<IssueResponse> issues =
+            data.map((e) => IssueResponse.fromJson(e)).toList();
 
-        for (var element in photos) {
+        for (var element in issues) {
           issueList.add(element);
           update();
         }
@@ -79,8 +80,6 @@ class IssueController extends GetxController {
       pageNo++;
 
       //isLastPage = payload?.last == true;
-
-    } else {
-    }
+    } else {}*/
   }
 }

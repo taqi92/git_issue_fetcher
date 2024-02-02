@@ -248,25 +248,21 @@
 // List<IssueResponse> issuesFromJson(dynamic body) => List<IssueResponse>.from(
 //     jsonDecode(body).map((x) => IssueResponse.fromJson(x)));
 
-import 'dart:convert';
-
 class IssueResponse {
   final int? id;
   final String? title;
   final User? user;
+  final String? createdAt;
   final List<Labels>? labels;
-  final dynamic activeLockReason;
   final String? body;
-  final dynamic stateReason;
 
   IssueResponse({
     this.id,
     this.title,
     this.user,
     this.labels,
-    this.activeLockReason,
+    this.createdAt,
     this.body,
-    this.stateReason,
   });
 
   IssueResponse.fromJson(Map<String, dynamic> json)
@@ -278,35 +274,27 @@ class IssueResponse {
         labels = (json['labels'] as List?)
             ?.map((dynamic e) => Labels.fromJson(e as Map<String, dynamic>))
             .toList(),
-        activeLockReason = json['active_lock_reason'],
-        body = json['body'] as String?,
-        stateReason = json['state_reason'];
+        createdAt = json['created_at'] as String?,
+        body = json['body'] as String?;
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,
         'user': user?.toJson(),
         'labels': labels?.map((e) => e.toJson()).toList(),
-        'active_lock_reason': activeLockReason,
         'body': body,
-        'state_reason': stateReason
       };
+
 }
 
 class User {
-  final int? id;
-  final String? type;
-  final bool? siteAdmin;
+  final String? login;
 
-  User({this.id, this.type, this.siteAdmin});
+  User({this.login});
 
-  User.fromJson(Map<String, dynamic> json)
-      : id = json['id'] as int?,
-        type = json['type'] as String?,
-        siteAdmin = json['site_admin'] as bool?;
+  User.fromJson(Map<String, dynamic> json) : login = json['login'] as String?;
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'type': type, 'site_admin': siteAdmin};
+  Map<String, dynamic> toJson() => {'login': login};
 }
 
 class Labels {
@@ -330,8 +318,8 @@ class Labels {
 
   Map<String, dynamic> toJson() =>
       {'id': id, 'name': name, 'color': color, 'description': description};
+
 }
 
-List<IssueResponse> issuesFromJson(dynamic body) =>
-    List<IssueResponse>.from(
-        jsonDecode(body).map((x) => IssueResponse.fromJson(x)));
+
+
