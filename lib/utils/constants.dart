@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -127,4 +128,30 @@ Navigation(Widget page, {String? arguments, bool? type}) {
       Get.to(() => page, transition: sendTransition);
     }
   }
+}
+
+String convertUtcToLocal(String inputDateString) {
+  // Parse the input date string
+  DateTime utcDateTime = DateTime.parse(inputDateString);
+
+  // Convert UTC to local time
+  DateTime localDateTime = utcDateTime.toLocal();
+
+  // Format the date to a human-readable format
+  String formattedDate =
+  DateFormat('dd/MM/yyyy HH:mm:ss a').format(localDateTime);
+
+  return formattedDate;
+}
+
+void loading(
+    {var value = "Please wait...",
+      bool isHideKeyboard = true,
+      bool isFormLoading = false}) {
+  if (isHideKeyboard) closeSoftKeyBoard();
+  EasyLoading.show(status: value);
+}
+
+String listToString(Set<String> stringList) {
+  return stringList.join(',');
 }

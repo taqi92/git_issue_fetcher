@@ -19,12 +19,16 @@ class $AssetsImagesGen {
   AssetGenImage get noContent =>
       const AssetGenImage('assets/images/no_content.png');
 
+  /// File path: assets/images/og_image.png
+  AssetGenImage get ogImage =>
+      const AssetGenImage('assets/images/og_image.png');
+
   /// File path: assets/images/splash_loader.gif
   AssetGenImage get splashLoader =>
       const AssetGenImage('assets/images/splash_loader.gif');
 
   /// List of all assets
-  List<AssetGenImage> get values => [appLogo, noContent, splashLoader];
+  List<AssetGenImage> get values => [appLogo, noContent, ogImage, splashLoader];
 }
 
 class $AssetsLocalesGen {

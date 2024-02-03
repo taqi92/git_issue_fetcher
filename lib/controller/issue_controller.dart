@@ -15,11 +15,10 @@ class IssueController extends GetxController {
   late final IssueRepository _issueRepository;
 
   List<IssueResponse> issueList = [];
+  Set<String> labelList = {};
 
-  // Track the loading and loaded states
-  bool isLoading = false;
-  bool isLoaded = false;
-  int pageNo = 0;
+  int pageNo = 1;
+  bool isLastPage = false;
 
   @override
   void onInit() {
@@ -30,19 +29,32 @@ class IssueController extends GetxController {
   Future<void> getAllIssue({
     int pageSize = 20,
     bool isFromLoadNext = false,
+    bool isLabeled = false
   }) async {
     if (!isFromLoadNext) {
       issueList = [];
       pageNo = 1;
     }
 
-    String url =
-        "https://api.github.com/repos${fetchListEndPoints}page=$pageNo&per_page=$pageSize";
+    loading();
+
+    late String url;
+
+    if(isLabeled){
+
+      String labels = listToString(labelList);
+
+      url = "${fetchListEndPoints}page=$pageNo&per_page=$pageSize&labels=$labels";
+
+    }else{
+
+      url = "${fetchListEndPoints}page=$pageNo&per_page=$pageSize";
+    }
+
+
 
     _issueRepository.getIssueList(url, (response, error) {
       if (response != null) {
-
-        issueList = [];
 
         var payload = response;
 
@@ -50,7 +62,11 @@ class IssueController extends GetxController {
           issueList.add(item);
         }
 
-        //isLastPage = payload?.last == true;
+        if(response.isEmpty){
+
+          isLastPage = true;
+
+        }
 
         dismissLoading();
         update();
@@ -58,28 +74,29 @@ class IssueController extends GetxController {
         showMessage(error);
       }
     });
-
-    /*final dio = Dio();
-
-    final response = await dio.get(url);
-
-    if (response.statusCode == 200) {
-      final responseData = response.data;
-
-      if (responseData is List<dynamic>) {
-        final data = (response.data as List<dynamic>);
-        final List<IssueResponse> issues =
-            data.map((e) => IssueResponse.fromJson(e)).toList();
-
-        for (var element in issues) {
-          issueList.add(element);
-          update();
-        }
-      }
-
-      pageNo++;
-
-      //isLastPage = payload?.last == true;
-    } else {}*/
   }
+
+  void loadNextPage() {
+    if (!isLastPage) {
+      pageNo++;
+      getAllIssue(isFromLoadNext: true);
+    }
+  }
+
+  void addLabelsToList(String input) {
+    labelList.add(input);
+
+    labelList.forEach((element) {
+      log("label + $element");
+    });
+
+    getAllIssue(isLabeled: true);
+  }
+
+  void clearFilter(){
+
+    labelList.clear();
+    getAllIssue();
+  }
+
 }

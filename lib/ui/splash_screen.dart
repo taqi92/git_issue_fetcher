@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:github_issue_fetcher/utils/style.dart';
 
 import '../../base/base_state.dart';
 import '../../gen/assets.gen.dart';
@@ -27,9 +28,7 @@ class _SplashScreenState extends BaseState<SplashScreen> {
       if (internet) {
         // Internet Present Case
 
-        Future.delayed(const Duration(milliseconds: 2000), () {
-          Get.offAll(() =>  const IssueListPage(), transition: sendTransition);
-        });
+        proceed();
       } else {
         // No-Internet Case
         showWarningDialog(context);
@@ -40,20 +39,23 @@ class _SplashScreenState extends BaseState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: kPreliminaryColor,
         body: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(Assets.images.appLogo.path,fit: BoxFit.fitHeight,),
+              Image.asset(
+                Assets.images.ogImage.path,
+                fit: BoxFit.fitHeight,
+              ),
               Image.asset(Assets.images.splashLoader.path),
             ],
           ),
         ));
   }
 
-  showWarningDialog(BuildContext context) {
+  /*showWarningDialog(BuildContext context) {
     Widget continueButton = TextButton(
       child: const Text(
         "Retry",
@@ -122,5 +124,48 @@ class _SplashScreenState extends BaseState<SplashScreen> {
         },
       );
     }
+  }*/
+
+  showWarningDialog(BuildContext context) {
+    Widget continueButton = TextButton(
+      child: const Text("Retry"),
+      onPressed: () {
+        Navigator.pop(context);
+        isInternetConnected(context).then((internet) {
+          internet ? proceed() : showWarningDialog(context);
+        });
+      },
+    );
+
+    Widget cancelButton = TextButton(
+      child: const Text("Exit"),
+      onPressed: () => Platform.isAndroid ? SystemNavigator.pop() : exit(0),
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Platform.isIOS
+            ? CupertinoAlertDialog(
+                title: const Text("No Internet connection!"),
+                content:
+                    const Text("Please connect your device to the internet."),
+                actions: [cancelButton, continueButton],
+              )
+            : AlertDialog(
+                elevation: 2,
+                title: const Text("No Internet connection!"),
+                content:
+                    const Text("Please connect your device to the internet."),
+                actions: [cancelButton, continueButton],
+              );
+      },
+    );
+  }
+
+  void proceed() {
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      Get.offAll(() => const IssueListPage(), transition: sendTransition);
+    });
   }
 }
